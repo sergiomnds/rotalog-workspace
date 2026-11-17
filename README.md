@@ -47,3 +47,16 @@ rotalog-workspace/
 - Se precisar resetar o banco, apague o volume do Docker antes de subir novamente:
   `docker-compose down -v && docker-compose up -d`
 - Redis e Kafka estão comentados no compose — nunca foram implementados.
+
+## Alerta de manutenção preventiva
+
+Scripts específicos da feature (executados em ordem na primeira subida; idempotentes):
+
+| Script | O que faz |
+|--------|-----------|
+| `10-add-alertas-manutencao.sql` | cria `frotas.alertas_manutencao` |
+| `11-seed-veiculos-manutencao-preventiva.sql` | veículos elegíveis (por km, por tempo, por ambos, sem manutenção) e dois de controle não elegíveis |
+| `12-seed-template-alerta-manutencao-preventiva.sql` | template de e-mail `ALERTA_MANUTENCAO_PREVENTIVA` |
+
+Em um volume `pgdata` já existente os scripts não rodam sozinhos; execute-os manualmente com
+`docker exec -i rotalog-db psql -U rotalog_admin -d rotalog < tools/scripts/<script>.sql`.
